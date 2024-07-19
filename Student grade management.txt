@@ -1,0 +1,77 @@
+#include <stdio.h>
+#include <string.h>
+
+#define MAX_STUDENTS 100
+#define MAX_SUBJECTS 10
+
+typedef struct {
+    char name[50];
+    int scores[MAX_SUBJECTS];
+    int num_subjects;
+    float average;
+    int highest_score;
+    int lowest_score;
+} Student;
+
+void inputStudentData(Student* student) {
+    printf("Enter student's name: ");
+    getchar(); 
+    fgets(student->name, sizeof(student->name), stdin);
+    student->name[strcspn(student->name, "\n")] = '\0'; 
+
+    printf("Enter number of subjects: ");
+    scanf("%d", &student->num_subjects);
+
+    for (int i = 0; i < student->num_subjects; i++) {
+        printf("Enter score for subject %d: ", i + 1);
+        scanf("%d", &student->scores[i]);
+    }
+}
+
+void calculateStatistics(Student* student) {
+    int total = 0;
+    student->highest_score = student->scores[0];
+    student->lowest_score = student->scores[0];
+
+    for (int i = 0; i < student->num_subjects; i++) {
+        total += student->scores[i];
+        if (student->scores[i] > student->highest_score) {
+            student->highest_score = student->scores[i];
+        }
+        if (student->scores[i] < student->lowest_score) {
+            student->lowest_score = student->scores[i];
+        }
+    }
+    student->average = (float)total / student->num_subjects;
+}
+
+void displayStudentSummary(const Student* student) {
+    printf("\nStudent: %s\n", student->name);
+    printf("Scores: ");
+    for (int i = 0; i < student->num_subjects; i++) {
+        printf("%d, ", student->scores[i]);
+    }
+    printf("\nAverage Score: %.2f\n", student->average);
+    printf("Highest Score: %d\n", student->highest_score);
+    printf("Lowest Score: %d\n", student->lowest_score);
+}
+
+int main() {
+    Student students[MAX_STUDENTS];
+    int num_students;
+
+    printf("Enter number of students: ");
+    scanf("%d", &num_students);
+
+    for (int i = 0; i < num_students; i++) {
+        printf("\nEntering data for student %d\n", i + 1);
+        inputStudentData(&students[i]);
+        calculateStatistics(&students[i]);
+    }
+
+    for (int i = 0; i < num_students; i++) {
+        displayStudentSummary(&students[i]);
+    }
+
+    return 0;
+}
