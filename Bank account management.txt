@@ -1,0 +1,156 @@
+#include <stdio.h>
+#include <string.h>
+
+#define MAX_ACCOUNTS 100
+#define SAVINGS_INTEREST_RATE 0.03
+#define CHECKING_INTEREST_RATE 0.01
+
+typedef struct {
+    char accountHolderName[50];
+    int accountNumber;
+    char accountType[10]; 
+    double balance;
+} Account;
+
+int totalAccounts = 0;
+Account accounts[MAX_ACCOUNTS];
+
+void createAccount() {
+    if (totalAccounts >= MAX_ACCOUNTS) {
+        printf("Maximum account limit reached.\n");
+        return;
+    }
+
+    Account newAccount;
+    printf("Enter account holder name: ");
+    getchar(); 
+    fgets(newAccount.accountHolderName, sizeof(newAccount.accountHolderName), stdin);
+    newAccount.accountHolderName[strcspn(newAccount.accountHolderName, "\n")] = '\0'; 
+
+    printf("Enter account number: ");
+    scanf("%d", &newAccount.accountNumber);
+
+    printf("Enter account type (savings/checking): ");
+    scanf("%s", newAccount.accountType);
+
+    newAccount.balance = 0.0;
+
+    accounts[totalAccounts++] = newAccount;
+    printf("Account created successfully!\n");
+}
+
+void depositFunds() {
+    int accountNumber;
+    double amount;
+    printf("Enter account number: ");
+    scanf("%d", &accountNumber);
+
+    for (int i = 0; i < totalAccounts; i++) {
+        if (accounts[i].accountNumber == accountNumber) {
+            printf("Enter amount to deposit: ");
+            scanf("%lf", &amount);
+            accounts[i].balance += amount;
+            printf("Amount deposited successfully!\n");
+            return;
+        }
+    }
+    printf("Account not found.\n");
+}
+
+void withdrawFunds() {
+    int accountNumber;
+    double amount;
+    printf("Enter account number: ");
+    scanf("%d", &accountNumber);
+
+    for (int i = 0; i < totalAccounts; i++) {
+        if (accounts[i].accountNumber == accountNumber) {
+            printf("Enter amount to withdraw: ");
+            scanf("%lf", &amount);
+            if (accounts[i].balance >= amount) {
+                accounts[i].balance -= amount;
+                printf("Amount withdrawn successfully!\n");
+            } else {
+                printf("Insufficient balance.\n");
+            }
+            return;
+        }
+    }
+    printf("Account not found.\n");
+}
+
+void checkBalance() {
+    int accountNumber;
+    printf("Enter account number: ");
+    scanf("%d", &accountNumber);
+
+    for (int i = 0; i < totalAccounts; i++) {
+        if (accounts[i].accountNumber == accountNumber) {
+            printf("Account Holder: %s\n", accounts[i].accountHolderName);
+            printf("Account Type: %s\n", accounts[i].accountType);
+            printf("Balance: %.2f Rs\n", accounts[i].balance);
+            return;
+        }
+    }
+    printf("Account not found.\n");
+}
+
+void calculateInterest() {
+    int accountNumber;
+    printf("Enter account number: ");
+    scanf("%d", &accountNumber);
+
+    for (int i = 0; i < totalAccounts; i++) {
+        if (accounts[i].accountNumber == accountNumber) {
+            double interestRate = (strcmp(accounts[i].accountType, "savings") == 0) ? SAVINGS_INTEREST_RATE : CHECKING_INTEREST_RATE;
+            double interest = accounts[i].balance * interestRate;
+            printf("Calculated Interest: %.2f Rs\n", interest);
+            return;
+        }
+    }
+    printf("Account not found.\n");
+}
+
+void displayMenu() {
+    printf("\nBank Account Management System\n");
+    printf("1. Create Account\n");
+    printf("2. Deposit Funds\n");
+    printf("3. Withdraw Funds\n");
+    printf("4. Check Balance\n");
+    printf("5. Calculate Interest\n");
+    printf("6. Exit\n");
+    printf("Enter your choice: ");
+}
+
+int main() {
+    int choice;
+
+    while (1) {
+        displayMenu();
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                createAccount();
+                break;
+            case 2:
+                depositFunds();
+                break;
+            case 3:
+                withdrawFunds();
+                break;
+            case 4:
+                checkBalance();
+                break;
+            case 5:
+                calculateInterest();
+                break;
+            case 6:
+                printf("Exiting...\n");
+                return 0;
+            default:
+                printf("Invalid choice. Please try again.\n");
+        }
+    }
+    return 0;
+}
